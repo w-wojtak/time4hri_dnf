@@ -61,16 +61,16 @@ cd time4hri_dnf
 
 ### Build the Workspace
 
-`colcon build
+`colcon build`
 
 ### Source the Workspace
 Before running any ROS 2 commands or launching nodes:
 
-`source install/setup.bash
+`source install/setup.bash`
 
 Tip: Add this to your `.bashrc` for automatic sourcing:
 
-`echo "source ~/path/to/time4hri_dnf/install/setup.bash" >> ~/.bashrc source ~/.bashrc
+`echo "source ~/path/to/time4hri_dnf/install/setup.bash" >> ~/.bashrc source ~/.bashrc`
 
 
 ## Usage
@@ -79,7 +79,7 @@ This package includes two launch files for the two experimental phases.
 ### Learning Phase
 Launch nodes to observe and encode a sequence of actions:
 
-`ros2 launch dnf_cognitive_architecture_extended dnf_learn_launch.py
+`ros2 launch dnf_cognitive_architecture_extended dnf_learn_launch.py`
 
 Nodes launched:
 
@@ -89,11 +89,11 @@ Nodes launched:
 ### Recall Phase
 Launch nodes to execute the previously learned sequence:
 
-`ros2 launch dnf_cognitive_architecture_extended dnf_recall_launch.py
+`ros2 launch dnf_cognitive_architecture_extended dnf_recall_launch.py`
 
 You can optionally specify a trial number:
 
-`ros2 launch dnf_cognitive_architecture_extended dnf_recall_launch.py trial_number:=3
+`ros2 launch dnf_cognitive_architecture_extended dnf_recall_launch.py trial_number:=3`
 
 Nodes launched:
 
