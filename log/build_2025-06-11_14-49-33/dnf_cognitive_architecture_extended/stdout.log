@@ -1,0 +1,39 @@
+running egg_info
+creating ../../build/dnf_cognitive_architecture_extended/dnf_cognitive_architecture_extended.egg-info
+writing manifest file '../../build/dnf_cognitive_architecture_extended/dnf_cognitive_architecture_extended.egg-info/SOURCES.txt'
+writing manifest file '../../build/dnf_cognitive_architecture_extended/dnf_cognitive_architecture_extended.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build
+creating /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib
+creating /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+copying dnf_cognitive_architecture_extended/input_matrix.py -> /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+copying dnf_cognitive_architecture_extended/output_node.py -> /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+copying dnf_cognitive_architecture_extended/dnf_model_recall.py -> /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+copying dnf_cognitive_architecture_extended/dnf_model_learning.py -> /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+copying dnf_cognitive_architecture_extended/rabbitmq_input_matrix.py -> /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+copying dnf_cognitive_architecture_extended/rabbit_subscriber_node.py -> /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+copying dnf_cognitive_architecture_extended/__init__.py -> /home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/build/lib/dnf_cognitive_architecture_extended
+running install
+running install_lib
+creating /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended
+byte-compiling /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended/input_matrix.py to input_matrix.cpython-310.pyc
+byte-compiling /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended/output_node.py to output_node.cpython-310.pyc
+byte-compiling /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended/dnf_model_recall.py to dnf_model_recall.cpython-310.pyc
+byte-compiling /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended/dnf_model_learning.py to dnf_model_learning.cpython-310.pyc
+byte-compiling /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended/rabbitmq_input_matrix.py to rabbitmq_input_matrix.cpython-310.pyc
+byte-compiling /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended/rabbit_subscriber_node.py to rabbit_subscriber_node.cpython-310.pyc
+byte-compiling /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended/__init__.py to __init__.cpython-310.pyc
+running install_data
+creating /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/ament_index
+creating /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/ament_index/resource_index
+creating /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/ament_index/resource_index/packages
+copying resource/dnf_cognitive_architecture_extended -> /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/ament_index/resource_index/packages
+copying package.xml -> /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/dnf_cognitive_architecture_extended
+creating /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/dnf_cognitive_architecture_extended/launch
+copying launch/dnf_recall_launch.py -> /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/dnf_cognitive_architecture_extended/launch
+copying launch/dnf_learn_launch.py -> /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/share/dnf_cognitive_architecture_extended/launch
+running install_egg_info
+Copying ../../build/dnf_cognitive_architecture_extended/dnf_cognitive_architecture_extended.egg-info to /home/wwojtak/time4hri_dnf/install/dnf_cognitive_architecture_extended/lib/python3.10/site-packages/dnf_cognitive_architecture_extended-0.0.0-py3.10.egg-info
+running install_scripts
+writing list of installed files to '/home/wwojtak/time4hri_dnf/build/dnf_cognitive_architecture_extended/install.log'
