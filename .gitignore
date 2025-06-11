@@ -1,0 +1,21 @@
+# Build folders
+/build/
+/install/
+/log/
+/data/
+
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VSCode settings and workspace files
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other
+*.egg-info/

@@ -15,9 +15,13 @@ dnf_cognitive_architecture_extended/input_matrix.py
 dnf_cognitive_architecture_extended/output_node.py
 dnf_cognitive_architecture_extended/rabbit_subscriber_node.py
 dnf_cognitive_architecture_extended/rabbitmq_input_matrix.py
+dnf_cognitive_architecture_extended.egg-info/PKG-INFO
+dnf_cognitive_architecture_extended.egg-info/SOURCES.txt
+dnf_cognitive_architecture_extended.egg-info/dependency_links.txt
+dnf_cognitive_architecture_extended.egg-info/entry_points.txt
+dnf_cognitive_architecture_extended.egg-info/requires.txt
+dnf_cognitive_architecture_extended.egg-info/top_level.txt
+dnf_cognitive_architecture_extended.egg-info/zip-safe
 launch/dnf_learn_launch.py
 launch/dnf_recall_launch.py
 resource/dnf_cognitive_architecture_extended
-test/test_copyright.py
-test/test_flake8.py
-test/test_pep257.py

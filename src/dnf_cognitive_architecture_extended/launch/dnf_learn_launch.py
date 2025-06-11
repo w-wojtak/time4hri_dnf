@@ -6,8 +6,8 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='dnf_cognitive_architecture_extended',
-            executable='rabbitmq_input_matrix',
-            name='rabbitmq_input_matrix'
+            executable='input_matrix',
+            name='input_matrix'
         ),
         Node(
             package='dnf_cognitive_architecture_extended',

@@ -1,1 +1,0 @@
-dnf_cognitive_architecture_extended

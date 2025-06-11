@@ -14,7 +14,12 @@ setup(
         ('share/' + package_name + '/launch', ['launch/dnf_learn_launch.py']),
         # Add any other launch files as needed
     ],
-    install_requires=['setuptools'],
+    install_requires=[
+        'setuptools',
+        'rclpy',
+        'numpy',
+        'matplotlib'
+    ],
     zip_safe=True,
     maintainer='wwojtak',
     maintainer_email='w.wojtak@gmail.com',
