@@ -18,11 +18,14 @@ class DNFModelWM(Node):
         super().__init__("dnf_model_recall")
 
         # Declare the 'trial_number' parameter
-        self.declare_parameter('trial_number', 1)  # Default value is 1
+        # self.declare_parameter('trial_number', 1)  # Default value is 1
+        self.declare_parameters(namespace='', parameters=[('trial_number', 1)])
 
         # Get the value of 'trial_number'
-        self.trial_number = self.get_parameter(
-            'trial_number').get_parameter_value().integer_value
+        # self.trial_number = self.get_parameter(
+        #     'trial_number').get_parameter_value().integer_value
+
+        self.trial_number = int(self.get_parameter('trial_number').value)
 
         # Log the trial number
         self.get_logger().info(

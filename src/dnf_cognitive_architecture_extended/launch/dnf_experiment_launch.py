@@ -1,60 +1,67 @@
 from launch import LaunchDescription
-from launch.actions import TimerAction, IncludeLaunchDescription, Shutdown
 from launch_ros.actions import Node
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import ThisLaunchFileDir
-import os
+from launch.actions import RegisterEventHandler, TimerAction
+from launch.event_handlers import OnProcessExit
+from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
 
 
 def generate_launch_description():
-    launch_dir = os.path.join(
-        os.path.dirname(__file__)
+    trial_number = LaunchConfiguration('trial_number')
+
+    # Learning phase nodes
+    learning_input_node = Node(
+        package='dnf_cognitive_architecture_extended',
+        executable='input_matrix',
+        name='input_matrix_learning'
     )
 
-    # --- Learning Phase ---
-    learning_nodes = [
-        Node(
-            package='dnf_cognitive_architecture_extended',
-            executable='input_matrix',
-            name='input_matrix_learning'
+    learning_dnf_node = Node(
+        package='dnf_cognitive_architecture_extended',
+        executable='dnf_model_learning',
+        name='dnf_model_learning'
+    )
+
+    # Recall phase (launches 3 trials one after the other)
+    recall_nodes = []
+    for i in range(1, 4):
+        recall_nodes.extend([
+            Node(
+                package='dnf_cognitive_architecture_extended',
+                executable='input_matrix',
+                name=f'input_matrix_recall_{i}'
+            ),
+            Node(
+                package='dnf_cognitive_architecture_extended',
+                executable='dnf_model_recall',
+                name=f'dnf_model_recall_{i}',
+                parameters=[{
+                    'trial_number': LaunchConfiguration('trial_number')
+                }],
+            ),
+            Node(
+                package='dnf_cognitive_architecture_extended',
+                executable='output_node',
+                name=f'output_node_{i}'
+            ),
+            TimerAction(period=2.0, actions=[])  # Small delay between trials
+        ])
+
+    # Only launch recall after learning_dnf_node exits
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            'trial_number',
+            default_value='1',
+            description='Trial number for the recall mode'
         ),
-        Node(
-            package='dnf_cognitive_architecture_extended',
-            executable='dnf_model_learning',
-            name='dnf_model_learning'
+
+        learning_input_node,
+        learning_dnf_node,
+
+        RegisterEventHandler(
+            OnProcessExit(
+                target_action=learning_dnf_node,
+                on_exit=recall_nodes
+            )
         )
-    ]
-
-    # --- Recall Phase Template ---
-    def recall_phase(trial_num, delay_sec):
-        return TimerAction(
-            period=delay_sec,
-            actions=[
-                Node(
-                    package='dnf_cognitive_architecture_extended',
-                    executable='input_matrix',
-                    name=f'input_matrix_recall_{trial_num}'
-                ),
-                Node(
-                    package='dnf_cognitive_architecture_extended',
-                    executable='dnf_model_recall',
-                    name=f'dnf_model_recall_{trial_num}',
-                    parameters=[{'trial_number': trial_num}]
-                ),
-                Node(
-                    package='dnf_cognitive_architecture_extended',
-                    executable='output_node',
-                    name=f'output_node_{trial_num}'
-                )
-            ]
-        )
-
-    # Delay to allow learning phase to complete (e.g. 10 seconds)
-    recall_1 = recall_phase(1, delay_sec=100.0)
-    # Assumes each recall takes ~15s
-    recall_2 = recall_phase(2, delay_sec=200.0)
-    recall_3 = recall_phase(3, delay_sec=300.0)
-
-    return LaunchDescription(
-        learning_nodes + [recall_1, recall_2, recall_3]
-    )
+    ])
