@@ -12,6 +12,8 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', ['launch/dnf_recall_launch.py']),
         ('share/' + package_name + '/launch', ['launch/dnf_learn_launch.py']),
+        ('share/' + package_name + '/launch',
+         ['launch/dnf_experiment_launch.py']),
         # Add any other launch files as needed
     ],
     install_requires=[
@@ -28,8 +30,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "rabbit_subscriber_node = dnf_cognitive_architecture_extended.rabbit_subscriber_node:main",
-            'rabbitmq_input_matrix = dnf_cognitive_architecture_extended.rabbitmq_input_matrix:main',
             "input_matrix = dnf_cognitive_architecture_extended.input_matrix:main",
             "dnf_model_learning = dnf_cognitive_architecture_extended.dnf_model_learning:main",
             "output_node = dnf_cognitive_architecture_extended.output_node:main",

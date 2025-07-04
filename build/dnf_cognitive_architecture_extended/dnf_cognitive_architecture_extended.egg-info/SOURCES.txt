@@ -22,6 +22,7 @@ dnf_cognitive_architecture_extended.egg-info/entry_points.txt
 dnf_cognitive_architecture_extended.egg-info/requires.txt
 dnf_cognitive_architecture_extended.egg-info/top_level.txt
 dnf_cognitive_architecture_extended.egg-info/zip-safe
+launch/dnf_experiment_launch.py
 launch/dnf_learn_launch.py
 launch/dnf_recall_launch.py
 resource/dnf_cognitive_architecture_extended
