@@ -41,9 +41,6 @@ class DNFModel(Node):
             10
         )
 
-        # Initialize figure and axis for plotting
-        # self.fig, self.ax = plt.subplots()
-
         self.fig, axes = plt.subplots(1, 2, figsize=(10, 5))
         self.ax1, self.ax2 = axes.flatten()
 
@@ -66,21 +63,6 @@ class DNFModel(Node):
         self.ax2.set_ylabel("u_sm_2(x)")
         self.ax2.set_title("Sequence Memory Field 2 (Human)")
         self.ax2.legend()
-
-        # self.line, = self.ax.plot(
-        #     self.x, np.zeros_like(self.x), label="u_field")
-        # self.line_input, = self.ax.plot(self.x, np.zeros_like(
-        #     self.x), label="Input", linestyle="--", color="orange")
-
-        # self.line_u_d, = self.ax.plot(
-        #     self.x, np.zeros_like(self.x), label="duration")
-
-        # self.ax.set_xlim(-self.x_lim, self.x_lim)
-        # self.ax.set_ylim(-1, 5)  # Adjust based on expected input amplitude
-        # self.ax.set_xlabel("x")
-        # self.ax.set_ylabel("u_sm(x), I(x)")
-        # self.ax.set_title("u_sm(x), I(x)")
-        # self.ax.legend()
 
         # Variable to store the latest input slice
         self.latest_input_slice = np.zeros_like(self.x)
@@ -122,15 +104,6 @@ class DNFModel(Node):
 
     def input_callback(self, msg):
 
-        # received_data = np.array(msg.data)
-        # # Extract the two matrices from the flattened data
-        # # Assuming each matrix has the same length as the x-dimension of the grid
-        # n = len(received_data) // 2  # Since both matrices are of equal size
-
-        # # Split the received data back into two matrices
-        # matrix_1 = received_data[:n]
-        # matrix_2 = received_data[n:]
-
         received_data = np.array(msg.data)
         self.latest_input_slice = received_data
         n = len(self.latest_input_slice) // 3
@@ -140,15 +113,6 @@ class DNFModel(Node):
 
         self.get_logger().info(f"1ST INPUT MAX {max(input_agent1)}")
         self.get_logger().info(f"2ND INPUT MAX {max(input_agent2)}")
-
-        # self.get_logger().info(f"2ND INPUT MAX {max(matrix_2)}")
-
-        # with self._lock:
-        #     self.latest_input_slice = matrix_1
-        #     self.latest_input_slice_2 = matrix_2
-
-        # 2nd input
-        # 2nd plot
 
         # Update time counter
         self.time_counter += self.dt
@@ -211,12 +175,6 @@ class DNFModel(Node):
                 f"Received input at time step {self.current_step} with max amplitude: {max_value:.2f}")
             self.current_step += 1  # Move to the next full step
 
-    # # Check if time counter exceeds or is very close to time limit
-    #     if int(self.time_counter) == int(self.t_lim):  # Using a small tolerance
-    #         print("Learning finished.")
-    #         self.save_sequence_memory()  # Save data before shutting down
-    #         rclpy.shutdown()  # Terminate the node
-
     def plt_func(self, _):
 
         # Update the plot with the latest data
@@ -226,17 +184,6 @@ class DNFModel(Node):
             self.line_u_sm_2.set_ydata(self.u_sm_2)
 
         return self.line_u_sm_1, self.line_u_sm_2
-        # Ensure data is of expected shape and type
-        # self.u_sm = self.u_sm.reshape(-1)  # Ensure 1D
-        # # Ensure 1D
-        # self.latest_input_slice = self.latest_input_slice.reshape(-1)
-
-        # # Set the data for plotting
-        # self.line.set_ydata(self.u_sm)  # Update u_field line
-        # # Update latest_input_slice line
-        # self.line_input.set_ydata(self.latest_input_slice)
-        # self.line_u_d.set_ydata(self.u_d)  # Update u_d line
-        # return self.line, self.line_input, self.line_u_d
 
     def _plt(self):
         # Start the animation

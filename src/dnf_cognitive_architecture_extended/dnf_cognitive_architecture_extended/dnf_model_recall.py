@@ -11,6 +11,7 @@ import threading
 from datetime import datetime
 import os
 import time
+import gc
 
 
 class DNFModelWM(Node):
@@ -18,12 +19,7 @@ class DNFModelWM(Node):
         super().__init__("dnf_model_recall")
 
         # Declare the 'trial_number' parameter
-        # self.declare_parameter('trial_number', 1)  # Default value is 1
         self.declare_parameters(namespace='', parameters=[('trial_number', 1)])
-
-        # Get the value of 'trial_number'
-        # self.trial_number = self.get_parameter(
-        #     'trial_number').get_parameter_value().integer_value
 
         self.trial_number = int(self.get_parameter('trial_number').value)
 
@@ -64,10 +60,6 @@ class DNFModelWM(Node):
         # Timer to publish every 1 second
         self.timer = self.create_timer(1.0, self.process_inputs)
 
-        # Initialize figure and axes for plotting
-        # self.fig, (self.ax1, self.ax2, self.ax3,
-        #            self.ax4) = plt.subplots(2, 2, figsize=(10, 10))
-        # Initialize figure and axes for plotting
         self.fig, axes = plt.subplots(2, 3, figsize=(15, 9))
         self.ax1, self.ax2, self.ax3, self.ax4, self.ax5, self.ax6 = axes.flatten()
 
@@ -139,7 +131,6 @@ class DNFModelWM(Node):
                 # self.h_d_initial = 4.1067860962773075
 
                 # Ensure it's 1D and shift as needed
-                # u0 = max(load_sequence_memory().flatten())
                 self.u_act = load_sequence_memory().flatten() - self.h_d_initial + 1.5
                 self.input_action_onset = load_sequence_memory().flatten()
                 self.h_u_act = -self.h_d_initial * \
@@ -149,12 +140,9 @@ class DNFModelWM(Node):
                 self.input_action_onset_2 = load_sequence_memory_2().flatten()
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
-                # self.get_logger().info(f"Initial h: {-self.h_d_initial}")
-                # self.get_logger().info(f"Initial u0: {u0}")
-                # self.get_logger().info(f"Initial u act : {max(self.u_act)}")
+
             else:
-                data_dir = os.path.join(
-                    os.getcwd(), 'dnf_architecture_extended/data')
+                data_dir = os.path.join(os.getcwd(), 'data')
                 self.get_logger().info(f"Loading from {data_dir}")
                 latest_h_amem_file = get_latest_file(data_dir, 'h_amem')
                 latest_h_amem = np.load(latest_h_amem_file, allow_pickle=True)
@@ -165,11 +153,12 @@ class DNFModelWM(Node):
                 self.h_u_act = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
+                self.u_sim = load_sequence_memory_2().flatten() - self.h_d_initial + 1.5
+                self.input_action_onset_2 = load_sequence_memory_2().flatten()
+                self.h_u_sim = -self.h_d_initial * \
+                    np.ones(np.shape(self.x)) + 1.5
+
         except FileNotFoundError:
-            # print("No previous sequence memory found, initializing with default values.")
-            # self.u_act = np.zeros(np.shape(self.x))  # Default initialization
-            # self.h_0_act = -3.2
-            # self.h_u_act = self.h_0_act * np.ones(np.shape(self.x))
             self.get_logger().info(f"No previous sequence memory found.")
 
         # Parameters specific to working memory
@@ -243,10 +232,8 @@ class DNFModelWM(Node):
 
     def perform_recall(self):
 
-        # received_data = np.array(msg.data)
-        # # Extract the two matrices from the flattened data
         # # Assuming each matrix has the same length as the x-dimension of the grid
-        # Since both matrices are of equal size
+        # Since matrices are of equal size
         n = len(self.latest_input_slice) // 3
 
         # Split the received data back into two matrices
@@ -294,8 +281,6 @@ class DNFModelWM(Node):
 
         # Update field states
         self.h_u_act += self.dt / self.tau_h_act
-        # self.u_act += self.dt * (-self.u_act + conv_act + self.input_action_onset +
-        #                          self.h_u_act - 1.9 * f_wm * self.u_wm)
         self.h_u_sim += self.dt / self.tau_h_sim
 
         self.u_act += self.dt * (-self.u_act + conv_act + self.input_action_onset +
@@ -304,8 +289,6 @@ class DNFModelWM(Node):
         self.u_sim += self.dt * (-self.u_sim + conv_sim + self.input_action_onset_2 +
                                  self.h_u_sim - 6.0 * f_wm * conv_wm)
 
-        # self.u_wm += self.dt * (-self.u_wm + conv_wm +
-        #                         self.h_u_wm + f_act * self.u_act)
         self.u_wm += self.dt * \
             (-self.u_wm + conv_wm + 6*((f_f1*self.u_f1)*(f_f2*self.u_f2)) + self.h_u_wm)
 
@@ -545,36 +528,9 @@ def main(args=None):
         node.save_history()
         node.destroy_node()
         rclpy.shutdown()
-        plt.close()
-    # rclpy.init(args=args)
-    # node = DNFModelWM()
-
-    # # Multi-threaded executor to handle ROS spinning
-    # executor = MultiThreadedExecutor()
-    # executor.add_node(node)
-
-    # try:
-    #     # Run the executor in a separate thread
-    #     thread = threading.Thread(target=executor.spin, daemon=True)
-    #     thread.start()
-
-    #     # Start the plotting function
-    #     node._plt()
-
-    #     # Main loop to handle executor
-    #     while rclpy.ok():
-    #         # Run a single spin cycle
-    #         executor.spin_once()
-    #         time.sleep(0.1)  # Sleep to allow for smooth spinning
-
-    # except KeyboardInterrupt:
-    #     pass
-    # finally:
-    #     # Ensure history is saved before shutting down
-    #     node.save_history()  # Save history
-    #     node.destroy_node()   # Destroy the node properly
-    #     rclpy.shutdown()      # Shutdown ROS2
-    #     plt.close()           # Close the plot
+        plt.close(node.fig)
+        gc.collect()
+        time.sleep(1)  # give some time before launching next recall
 
 
 if __name__ == '__main__':
