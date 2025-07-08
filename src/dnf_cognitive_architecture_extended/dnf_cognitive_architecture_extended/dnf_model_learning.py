@@ -238,6 +238,46 @@ class DNFModel(Node):
         np.save(filename_dur_h, self.u_d_history)
         print(f"Task duration history saved to {filename_dur_h}")
 
+    def plot_activity_evolution(self):
+        input_positions = [-40, 0, 40]
+
+        # Convert histories to arrays for easier indexing
+        # shape: (time_steps, len(input_positions))
+        u_sm_hist = np.array(self.u_sm_history)
+        u_sm_2_hist = np.array(self.u_sm_2_history)
+        u_d_hist = np.array(self.u_d_history)
+
+        time_steps = np.arange(len(u_sm_hist)) * self.dt
+
+        fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
+
+        # Plot u_sm (Agent 1)
+        for i, pos in enumerate(input_positions):
+            axes[0].plot(time_steps, u_sm_hist[:, i], label=f'x = {pos}')
+        axes[0].set_title('u_sm (Agent 1) over time at input positions')
+        axes[0].set_ylabel('u_sm')
+        axes[0].legend()
+        axes[0].grid(True)
+
+        # Plot u_sm_2 (Agent 2)
+        for i, pos in enumerate(input_positions):
+            axes[1].plot(time_steps, u_sm_2_hist[:, i], label=f'x = {pos}')
+        axes[1].set_title('u_sm_2 (Agent 2) over time at input positions')
+        axes[1].set_ylabel('u_sm_2')
+        axes[1].legend()
+        axes[1].grid(True)
+
+        # Plot u_d (center only)
+        axes[2].plot(time_steps, u_d_hist, label='center x=0', color='black')
+        axes[2].set_title('u_d over time at center position')
+        axes[2].set_xlabel('Time (s)')
+        axes[2].set_ylabel('u_d')
+        axes[2].legend()
+        axes[2].grid(True)
+
+        plt.tight_layout()
+        plt.show()
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -257,6 +297,7 @@ def main(args=None):
         pass
     finally:
         node.save_sequence_memory()
+        node.plot_activity_evolution()
         node.destroy_node()
         rclpy.shutdown()
         plt.close()
