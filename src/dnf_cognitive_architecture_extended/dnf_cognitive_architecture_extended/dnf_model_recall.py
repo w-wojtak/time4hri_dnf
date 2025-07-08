@@ -415,6 +415,46 @@ class DNFModelWM(Node):
 
         print(f"History saved.")
 
+    def plot_history_at_input_positions(self):
+
+        # List of input positions where we previously applied inputs
+        input_positions = [-40, 0, 40]
+
+        # Convert `input_positions` to indices in `self.x`
+        input_indices = [np.argmin(np.abs(self.x - pos))
+                         for pos in input_positions]
+
+        fields = {
+            'Action Onset (u_act)': self.u_act_history,
+            'Stimulus (u_sim)': self.u_sim_history,
+            'Working Memory (u_wm)': self.u_wm_history,
+            'Field 1 (u_f1)': self.u_f1_history,
+            'Field 2 (u_f2)': self.u_f2_history,
+        }
+
+        num_fields = len(fields)
+        time_steps = len(self.u_act_history)
+
+        fig, axes = plt.subplots(num_fields, 1, figsize=(
+            12, 3 * num_fields), sharex=True)
+
+        if num_fields == 1:
+            axes = [axes]
+
+        for ax, (label, history) in zip(axes, fields.items()):
+            for i, idx in enumerate(input_indices):
+                # extract the i-th value at each time step
+                values = [t[i] for t in history]
+                ax.plot(values, label=f'pos {idx}')
+            ax.set_ylabel(label)
+            ax.legend()
+            ax.grid(True)
+
+        axes[-1].set_xlabel('Time step')
+        plt.suptitle("Field values at input positions over time (Recall)")
+        plt.tight_layout()
+        plt.show()
+
 
 def load_sequence_memory(filename=None):
     data_dir = "data"
@@ -526,6 +566,7 @@ def main(args=None):
         pass
     finally:
         node.save_history()
+        node.plot_history_at_input_positions()
         node.destroy_node()
         rclpy.shutdown()
         plt.close(node.fig)
