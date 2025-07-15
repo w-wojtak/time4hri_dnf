@@ -12,6 +12,7 @@ from datetime import datetime
 import os
 import time
 import gc
+from scipy.ndimage import gaussian_filter1d  # type: ignore
 
 
 class DNFModelWM(Node):
@@ -145,11 +146,12 @@ class DNFModelWM(Node):
                 data_dir = os.path.join(os.getcwd(), 'data')
                 self.get_logger().info(f"Loading from {data_dir}")
                 latest_h_amem_file = get_latest_file(data_dir, 'h_amem')
-                latest_h_amem = np.load(latest_h_amem_file, allow_pickle=True)
+                self.latest_h_amem = np.load(
+                    latest_h_amem_file, allow_pickle=True)
 
                 self.u_act = load_sequence_memory().flatten() - self.h_d_initial + \
-                    1.5 + latest_h_amem
-                self.input_action_onset = load_sequence_memory().flatten() + latest_h_amem
+                    1.5 - self.latest_h_amem
+                self.input_action_onset = load_sequence_memory().flatten() - self.latest_h_amem
                 self.h_u_act = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
@@ -215,7 +217,7 @@ class DNFModelWM(Node):
 
         # initialize h level for the adaptation
         self.h_u_amem = np.zeros(np.shape(self.x))
-        self.beta_adapt = 0.01
+        self.beta_adapt = 0.005
 
     def process_inputs(self, msg=None):
         """Process recall by receiving msg from subscription or by timer."""
@@ -231,6 +233,8 @@ class DNFModelWM(Node):
             self.perform_recall()
 
     def perform_recall(self):
+
+        # self.get_logger().info(f"U ACT MAX {max(self.u_act)}")
 
         # # Assuming each matrix has the same length as the x-dimension of the grid
         # Since matrices are of equal size
@@ -410,10 +414,27 @@ class DNFModelWM(Node):
         filename_f2 = f"{data_dir}/f2_history_{timestamp}.npy"
         np.save(filename_f2, self.u_f2_history)
 
+        self.h_u_amem = gaussian_filter1d(self.h_u_amem, sigma=5)
+
+        if self.trial_number > 1:
+            self.h_u_amem += self.h_u_amem + self.latest_h_amem
+
         filename_h_amem = f"{data_dir}/h_amem_{timestamp}.npy"
         np.save(filename_h_amem, self.h_u_amem)
 
         print(f"History saved.")
+
+    def plot_final_amem(self):
+        plt.figure(figsize=(10, 4))
+        plt.plot(self.x, self.h_u_amem, label='h_u_amem', color='purple')
+        plt.title("Final h_u_amem over space")
+        plt.xlabel("x")
+        plt.ylabel("h_u_amem")
+        plt.xlim(-self.x_lim, self.x_lim)
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 
     def plot_history_at_input_positions(self):
 
@@ -432,9 +453,16 @@ class DNFModelWM(Node):
             'Field 2 (u_f2)': self.u_f2_history,
         }
 
-        num_fields = len(fields)
-        time_steps = len(self.u_act_history)
+        # Define axis limits based on field name
+        ylims = {
+            'Action Onset (u_act)': (-5, 5),
+            'Stimulus (u_sim)': (-5, 5),
+            'Working Memory (u_wm)': (-2, 16),
+            'Field 1 (u_f1)': (-5, 3.5),
+            'Field 2 (u_f2)': (-5, 3.5),
+        }
 
+        num_fields = len(fields)
         fig, axes = plt.subplots(num_fields, 1, figsize=(
             12, 3 * num_fields), sharex=True)
 
@@ -443,10 +471,10 @@ class DNFModelWM(Node):
 
         for ax, (label, history) in zip(axes, fields.items()):
             for i, idx in enumerate(input_indices):
-                # extract the i-th value at each time step
                 values = [t[i] for t in history]
-                ax.plot(values, label=f'pos {idx}')
+                ax.plot(values, label=f'pos {self.x[idx]:.1f}')
             ax.set_ylabel(label)
+            ax.set_ylim(ylims[label])  # Set Y-axis limits based on label
             ax.legend()
             ax.grid(True)
 
@@ -567,6 +595,7 @@ def main(args=None):
     finally:
         node.save_history()
         node.plot_history_at_input_positions()
+        node.plot_final_amem()
         node.destroy_node()
         rclpy.shutdown()
         plt.close(node.fig)

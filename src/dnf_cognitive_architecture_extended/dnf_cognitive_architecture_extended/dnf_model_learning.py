@@ -238,6 +238,9 @@ class DNFModel(Node):
         np.save(filename_dur_h, self.u_d_history)
         print(f"Task duration history saved to {filename_dur_h}")
 
+        self.get_logger().info(f"U SM MAX {max(self.u_sm_2)}")
+        self.get_logger().info(f"U D MAX {max(self.u_d)}")
+
     def plot_activity_evolution(self):
         input_positions = [-40, 0, 40]
 
