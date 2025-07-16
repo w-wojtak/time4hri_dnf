@@ -27,7 +27,7 @@ class DNFModel(Node):
         self.t = np.arange(0, self.t_lim + self.dt, self.dt)
 
         self.u_sm_history = []  # List to store values at each time step
-        self.u_sm_2_history = []  # List to store values at each time step
+        # self.u_sm_2_history = []  # List to store values at each time step
         self.u_d_history = []  # List to store values at each time step
 
         # Lock for threading
@@ -46,22 +46,22 @@ class DNFModel(Node):
 
         # Plot for u_sm_1 on ax1
         self.line_u_sm_1, = self.ax1.plot(
-            self.x, np.zeros_like(self.x), label="u_sm_1")
+            self.x, np.zeros_like(self.x), label="u_sm")
         self.ax1.set_xlim(-self.x_lim, self.x_lim)
-        self.ax1.set_ylim(-2, 10)  # Adjust based on expected amplitude
+        self.ax1.set_ylim(-1, 5)  # Adjust based on expected amplitude
         self.ax1.set_xlabel("x")
-        self.ax1.set_ylabel("u_sm_1(x)")
-        self.ax1.set_title("Sequence Memory Field 1 (Robot)")
+        self.ax1.set_ylabel("u_sm(x)")
+        self.ax1.set_title("Sequence Memory Field")
         self.ax1.legend()
 
         # Plot for u_sm_2 on ax2
-        self.line_u_sm_2, = self.ax2.plot(
-            self.x, np.zeros_like(self.x), label="u_sm_2")
+        self.line_u_d, = self.ax2.plot(
+            self.x, np.zeros_like(self.x), label="u_d")
         self.ax2.set_xlim(-self.x_lim, self.x_lim)
-        self.ax2.set_ylim(-2, 10)  # Adjust based on expected amplitude
+        self.ax2.set_ylim(-1, 5)  # Adjust based on expected amplitude
         self.ax2.set_xlabel("x")
-        self.ax2.set_ylabel("u_sm_2(x)")
-        self.ax2.set_title("Sequence Memory Field 2 (Human)")
+        self.ax2.set_ylabel("u_d(x)")
+        self.ax2.set_title("Task Duration Field")
         self.ax2.legend()
 
         # Variable to store the latest input slice
@@ -77,8 +77,8 @@ class DNFModel(Node):
         self.tau_h_sm = 20
         self.theta_sm = 1.5
 
-        self.h_0_sm_2 = 0
-        self.theta_sm_2 = 1.5
+        # self.h_0_sm_2 = 0
+        # self.theta_sm_2 = 1.5
 
         self.kernel_pars_sm = (1, 0.7, 0.9)
         # Fourier transform of the kernel function
@@ -88,8 +88,8 @@ class DNFModel(Node):
         self.u_sm = self.h_0_sm * np.ones(np.shape(self.x))
         self.h_u_sm = self.h_0_sm * np.ones(np.shape(self.x))
 
-        self.u_sm_2 = self.h_0_sm_2 * np.ones(np.shape(self.x))
-        self.h_u_sm_2 = self.h_0_sm_2 * np.ones(np.shape(self.x))
+        # self.u_sm_2 = self.h_0_sm_2 * np.ones(np.shape(self.x))
+        # self.h_u_sm_2 = self.h_0_sm_2 * np.ones(np.shape(self.x))
 
         # Parameters for task duration field u_d
         self.h_0_d = 0
@@ -134,10 +134,10 @@ class DNFModel(Node):
         conv_sm = self.dx * \
             np.fft.ifftshift(np.real(np.fft.ifft(f_hat_sm * self.w_hat_sm)))
 
-        f_sm_2 = np.heaviside(self.u_sm_2 - self.theta_sm_2, 1)
-        f_hat_sm_2 = np.fft.fft(f_sm_2)
-        conv_sm_2 = self.dx * \
-            np.fft.ifftshift(np.real(np.fft.ifft(f_hat_sm_2 * self.w_hat_sm)))
+        # f_sm_2 = np.heaviside(self.u_sm_2 - self.theta_sm_2, 1)
+        # f_hat_sm_2 = np.fft.fft(f_sm_2)
+        # conv_sm_2 = self.dx * \
+        #     np.fft.ifftshift(np.real(np.fft.ifft(f_hat_sm_2 * self.w_hat_sm)))
 
         self.h_u_d += self.dt / self.tau_h_d * f_d
         self.u_d += self.dt * (-self.u_d + conv_d + input_d + self.h_u_d)
@@ -146,9 +146,9 @@ class DNFModel(Node):
         self.u_sm += self.dt * (-self.u_sm + conv_sm +
                                 input_agent1 + self.h_u_sm)
 
-        self.h_u_sm_2 += self.dt / self.tau_h_sm * f_sm_2
-        self.u_sm_2 += self.dt * (-self.u_sm_2 + conv_sm_2 +
-                                  input_agent2 + self.h_u_sm_2)
+        # self.h_u_sm_2 += self.dt / self.tau_h_sm * f_sm_2
+        # self.u_sm_2 += self.dt * (-self.u_sm_2 + conv_sm_2 +
+        #                           input_agent2 + self.h_u_sm_2)
 
         # List of input positions
         input_positions = [-40, 0, 40]
@@ -161,9 +161,9 @@ class DNFModel(Node):
         u_sm_values_at_positions = [self.u_sm[idx] for idx in input_indices]
         self.u_sm_history.append(u_sm_values_at_positions)
 
-        u_sm_values_at_positions_2 = [self.u_sm_2[idx]
-                                      for idx in input_indices]
-        self.u_sm_2_history.append(u_sm_values_at_positions_2)
+        # u_sm_values_at_positions_2 = [self.u_sm_2[idx]
+        #                               for idx in input_indices]
+        # self.u_sm_2_history.append(u_sm_values_at_positions_2)
 
         center_index = len(self.u_d) // 2
         u_d_values_at_position = self.u_d[center_index]
@@ -181,9 +181,10 @@ class DNFModel(Node):
         with self._lock:
 
             self.line_u_sm_1.set_ydata(self.u_sm)
-            self.line_u_sm_2.set_ydata(self.u_sm_2)
+            self.line_u_d.set_ydata(self.u_d)
+            # self.line_u_sm_2.set_ydata(self.u_sm_2)
 
-        return self.line_u_sm_1, self.line_u_sm_2
+        return self.line_u_sm_1, self.line_u_d
 
     def _plt(self):
         # Start the animation
@@ -209,13 +210,13 @@ class DNFModel(Node):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{data_dir}/sequence_memory_{timestamp}.npy"
 
-        filename_sm_2 = f"{data_dir}/sequence_2_{timestamp}.npy"
+        # filename_sm_2 = f"{data_dir}/sequence_2_{timestamp}.npy"
 
         filename_d = f"{data_dir}/task_duration_{timestamp}.npy"
 
         filename_h = f"{data_dir}/sequence_history_{timestamp}.npy"
 
-        filename_h_2 = f"{data_dir}/sequence_history2_{timestamp}.npy"
+        # filename_h_2 = f"{data_dir}/sequence_history2_{timestamp}.npy"
 
         filename_dur_h = f"{data_dir}/duration_history_{timestamp}.npy"
 
@@ -223,8 +224,8 @@ class DNFModel(Node):
         np.save(filename, self.u_sm)
         print(f"Sequence memory saved to {filename}")
 
-        np.save(filename_sm_2, self.u_sm_2)
-        print(f"Sequence memory 2 saved to {filename}")
+        # np.save(filename_sm_2, self.u_sm_2)
+        # print(f"Sequence memory 2 saved to {filename}")
 
         np.save(filename_d, self.u_d)
         print(f"Task duration saved to {filename_d}")
@@ -232,14 +233,14 @@ class DNFModel(Node):
         np.save(filename_h, self.u_sm_history)
         print(f"Sequence history saved to {filename_h}")
 
-        np.save(filename_h_2, self.u_sm_2_history)
-        print(f"Sequence history 2 saved to {filename_h_2}")
+        # np.save(filename_h_2, self.u_sm_2_history)
+        # print(f"Sequence history 2 saved to {filename_h_2}")
 
         np.save(filename_dur_h, self.u_d_history)
         print(f"Task duration history saved to {filename_dur_h}")
 
-        self.get_logger().info(f"U SM MAX {max(self.u_sm_2)}")
-        self.get_logger().info(f"U D MAX {max(self.u_d)}")
+        # self.get_logger().info(f"U SM MAX {max(self.u_sm_2)}")
+        # self.get_logger().info(f"U D MAX {max(self.u_d)}")
 
     def plot_activity_evolution(self):
         input_positions = [-40, 0, 40]
@@ -247,36 +248,36 @@ class DNFModel(Node):
         # Convert histories to arrays for easier indexing
         # shape: (time_steps, len(input_positions))
         u_sm_hist = np.array(self.u_sm_history)
-        u_sm_2_hist = np.array(self.u_sm_2_history)
+        # u_sm_2_hist = np.array(self.u_sm_2_history)
         u_d_hist = np.array(self.u_d_history)
 
         time_steps = np.arange(len(u_sm_hist)) * self.dt
 
-        fig, axes = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
+        fig, axes = plt.subplots(2, 1, figsize=(10, 10), sharex=True)
 
         # Plot u_sm (Agent 1)
         for i, pos in enumerate(input_positions):
             axes[0].plot(time_steps, u_sm_hist[:, i], label=f'x = {pos}')
-        axes[0].set_title('u_sm (Agent 1) over time at input positions')
+        axes[0].set_title('u_sm (Robot) over time at input positions')
         axes[0].set_ylabel('u_sm')
         axes[0].legend()
         axes[0].grid(True)
 
-        # Plot u_sm_2 (Agent 2)
-        for i, pos in enumerate(input_positions):
-            axes[1].plot(time_steps, u_sm_2_hist[:, i], label=f'x = {pos}')
-        axes[1].set_title('u_sm_2 (Agent 2) over time at input positions')
-        axes[1].set_ylabel('u_sm_2')
-        axes[1].legend()
-        axes[1].grid(True)
+        # # Plot u_sm_2 (Agent 2)
+        # for i, pos in enumerate(input_positions):
+        #     axes[1].plot(time_steps, u_sm_2_hist[:, i], label=f'x = {pos}')
+        # axes[1].set_title('u_sm_2 (Agent 2) over time at input positions')
+        # axes[1].set_ylabel('u_sm_2')
+        # axes[1].legend()
+        # axes[1].grid(True)
 
         # Plot u_d (center only)
-        axes[2].plot(time_steps, u_d_hist, label='center x=0', color='black')
-        axes[2].set_title('u_d over time at center position')
-        axes[2].set_xlabel('Time (s)')
-        axes[2].set_ylabel('u_d')
-        axes[2].legend()
-        axes[2].grid(True)
+        axes[1].plot(time_steps, u_d_hist, label='center x=0', color='black')
+        axes[1].set_title('u_d over time at center position')
+        axes[1].set_xlabel('Time (s)')
+        axes[1].set_ylabel('u_d')
+        axes[1].legend()
+        axes[1].grid(True)
 
         plt.tight_layout()
         plt.show()
