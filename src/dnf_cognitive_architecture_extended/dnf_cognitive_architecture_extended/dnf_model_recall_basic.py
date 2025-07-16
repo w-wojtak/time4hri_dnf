@@ -142,6 +142,9 @@ class DNFModelWM(Node):
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
+                self.u_f2 = load_sequence_memory().flatten() - \
+                    self.h_d_initial + 1.5
+
             else:
                 data_dir = os.path.join(os.getcwd(), 'data_basic')
                 self.get_logger().info(f"Loading from {data_dir}")
@@ -159,6 +162,9 @@ class DNFModelWM(Node):
                 self.input_action_onset_2 = load_sequence_memory().flatten()
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
+
+                self.u_f2 = load_sequence_memory().flatten() - self.h_d_initial + \
+                    1.5 - self.latest_h_amem
 
         except FileNotFoundError:
             self.get_logger().info(f"No previous sequence memory found.")
@@ -198,13 +204,14 @@ class DNFModelWM(Node):
 
         # feedback fields - decision fields, similar to u_act
         self.h_f = -1.0
+        self.h_f_2 = -1.5
         self.w_hat_f = self.w_hat_act
 
         self.tau_h_f = self.tau_h_act
         self.theta_f = self.theta_act
 
         self.u_f1 = self.h_f * np.ones(np.shape(self.x))
-        self.u_f2 = self.h_f * np.ones(np.shape(self.x))
+        # self.u_f2 = self.h_f * np.ones(np.shape(self.x))
 
         self.u_error = self.h_f * np.ones(np.shape(self.x))
 
@@ -299,8 +306,8 @@ class DNFModelWM(Node):
         self.u_f1 += self.dt * (-self.u_f1 + conv_f1 + input_agent_robot_feedback +
                                 self.h_f - 1 * f_wm * conv_wm)
 
-        self.u_f2 += self.dt * (-self.u_f2 + conv_f2 + input_agent2 +
-                                self.h_f - 1 * f_wm * conv_wm)
+        self.u_f2 += self.dt * (-self.u_f2 + conv_f2 + input_agent2 + self.input_action_onset +
+                                self.h_f_2 - 1 * f_wm * conv_wm)
 
         self.u_error += self.dt * (-self.u_error + conv_error +
                                    self.h_f - 2 * f_sim * conv_sim)
@@ -507,31 +514,6 @@ def load_sequence_memory(filename=None):
         data = data.flatten()
 
         return data
-
-
-# def load_sequence_memory_2(filename=None):
-#     data_dir = "data_basic"
-#     if filename is None:
-#         # Filter files with the "sequence_memory_" prefix
-#         files = [f for f in os.listdir(data_dir) if f.startswith(
-#             "sequence_2_") and f.endswith('.npy')]
-
-#         if not files:
-#             raise FileNotFoundError(
-#                 "No 'sequence_2_' files found in the 'data' folder.")
-
-#         # Get the latest file by modification time
-#         latest_file = max([os.path.join(data_dir, f)
-#                           for f in files], key=os.path.getmtime)
-#         filename = latest_file
-
-#         data = np.load(filename)
-#         print(f"Loaded sequence memory from {filename}")
-
-#         # Ensure data is 1D
-#         data = data.flatten()
-
-#         return data
 
 
 def load_task_duration(filename=None):

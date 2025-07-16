@@ -17,8 +17,8 @@ def generate_launch_description():
     # Learning phase nodes
     learning_input_node = Node(
         package='dnf_cognitive_architecture_extended',
-        executable='input_matrix',
-        name='input_matrix_learning'
+        executable='input_matrix_basic',
+        name='input_matrix_learning_basic'
     )
 
     learning_dnf_node = Node(
@@ -31,8 +31,8 @@ def generate_launch_description():
     def create_recall_nodes(trial):
         input_node = Node(
             package='dnf_cognitive_architecture_extended',
-            executable='input_matrix',
-            name=f'input_matrix_recall_{trial}'
+            executable='input_matrix_basic',
+            name=f'input_matrix_recall_basic_{trial}'
         )
         dnf_node = Node(
             package='dnf_cognitive_architecture_extended',

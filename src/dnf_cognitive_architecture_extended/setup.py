@@ -37,6 +37,7 @@ setup(
     entry_points={
         'console_scripts': [
             "input_matrix = dnf_cognitive_architecture_extended.input_matrix:main",
+            "input_matrix_basic = dnf_cognitive_architecture_extended.input_matrix_basic:main",
             "dnf_model_learning = dnf_cognitive_architecture_extended.dnf_model_learning:main",
             "output_node = dnf_cognitive_architecture_extended.output_node:main",
             "dnf_model_recall = dnf_cognitive_architecture_extended.dnf_model_recall:main",
