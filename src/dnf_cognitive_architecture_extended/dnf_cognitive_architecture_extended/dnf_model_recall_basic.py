@@ -137,13 +137,13 @@ class DNFModelWM(Node):
                 self.h_u_act = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
-                self.u_sim = load_sequence_memory_2().flatten() - self.h_d_initial + 1.5
-                self.input_action_onset_2 = load_sequence_memory_2().flatten()
+                self.u_sim = load_sequence_memory().flatten() - self.h_d_initial + 1.5
+                self.input_action_onset_2 = load_sequence_memory().flatten()
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
             else:
-                data_dir = os.path.join(os.getcwd(), 'data')
+                data_dir = os.path.join(os.getcwd(), 'data_basic')
                 self.get_logger().info(f"Loading from {data_dir}")
                 latest_h_amem_file = get_latest_file(data_dir, 'h_amem')
                 self.latest_h_amem = np.load(
@@ -155,8 +155,8 @@ class DNFModelWM(Node):
                 self.h_u_act = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
-                self.u_sim = load_sequence_memory_2().flatten() - self.h_d_initial + 1.5
-                self.input_action_onset_2 = load_sequence_memory_2().flatten()
+                self.u_sim = load_sequence_memory().flatten() - self.h_d_initial + 1.5
+                self.input_action_onset_2 = load_sequence_memory().flatten()
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
@@ -373,7 +373,7 @@ class DNFModelWM(Node):
 
     def save_working_memory(self):
         # Create directory if it doesn't exist
-        data_dir = "data"
+        data_dir = "data_basic"
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
 
@@ -387,7 +387,7 @@ class DNFModelWM(Node):
 
     def save_history(self):
 
-        data_dir = "data"
+        data_dir = "data_basic"
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
 
@@ -485,7 +485,7 @@ class DNFModelWM(Node):
 
 
 def load_sequence_memory(filename=None):
-    data_dir = "data"
+    data_dir = "data_basic"
     if filename is None:
         # Filter files with the "sequence_memory_" prefix
         files = [f for f in os.listdir(data_dir) if f.startswith(
@@ -509,33 +509,33 @@ def load_sequence_memory(filename=None):
         return data
 
 
-def load_sequence_memory_2(filename=None):
-    data_dir = "data"
-    if filename is None:
-        # Filter files with the "sequence_memory_" prefix
-        files = [f for f in os.listdir(data_dir) if f.startswith(
-            "sequence_2_") and f.endswith('.npy')]
+# def load_sequence_memory_2(filename=None):
+#     data_dir = "data_basic"
+#     if filename is None:
+#         # Filter files with the "sequence_memory_" prefix
+#         files = [f for f in os.listdir(data_dir) if f.startswith(
+#             "sequence_2_") and f.endswith('.npy')]
 
-        if not files:
-            raise FileNotFoundError(
-                "No 'sequence_2_' files found in the 'data' folder.")
+#         if not files:
+#             raise FileNotFoundError(
+#                 "No 'sequence_2_' files found in the 'data' folder.")
 
-        # Get the latest file by modification time
-        latest_file = max([os.path.join(data_dir, f)
-                          for f in files], key=os.path.getmtime)
-        filename = latest_file
+#         # Get the latest file by modification time
+#         latest_file = max([os.path.join(data_dir, f)
+#                           for f in files], key=os.path.getmtime)
+#         filename = latest_file
 
-        data = np.load(filename)
-        print(f"Loaded sequence memory from {filename}")
+#         data = np.load(filename)
+#         print(f"Loaded sequence memory from {filename}")
 
-        # Ensure data is 1D
-        data = data.flatten()
+#         # Ensure data is 1D
+#         data = data.flatten()
 
-        return data
+#         return data
 
 
 def load_task_duration(filename=None):
-    data_dir = "data"
+    data_dir = "data_basic"
     if filename is None:
         # Filter files with the "sequence_memory_" prefix
         files = [f for f in os.listdir(data_dir) if f.startswith(
