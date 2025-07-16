@@ -14,6 +14,8 @@ setup(
         ('share/' + package_name + '/launch', ['launch/dnf_learn_launch.py']),
         ('share/' + package_name + '/launch',
          ['launch/dnf_experiment_launch.py']),
+        ('share/' + package_name + '/launch',
+         ['launch/dnf_experiment_basic_launch.py']),
         # Add any other launch files as needed
     ],
     install_requires=[
@@ -33,7 +35,9 @@ setup(
             "input_matrix = dnf_cognitive_architecture_extended.input_matrix:main",
             "dnf_model_learning = dnf_cognitive_architecture_extended.dnf_model_learning:main",
             "output_node = dnf_cognitive_architecture_extended.output_node:main",
-            "dnf_model_recall = dnf_cognitive_architecture_extended.dnf_model_recall:main"
+            "dnf_model_recall = dnf_cognitive_architecture_extended.dnf_model_recall:main",
+            "dnf_model_learning_basic = dnf_cognitive_architecture_extended.dnf_model_learning_basic:main",
+            "dnf_model_recall_basic = dnf_cognitive_architecture_extended.dnf_model_recall_basic:main"
         ],
     },
 )
