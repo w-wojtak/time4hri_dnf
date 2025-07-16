@@ -2,7 +2,8 @@
 /build/
 /install/
 /log/
-/data/
+/data_basic/
+/data_extended/
 
 # Python cache and bytecode
 __pycache__/

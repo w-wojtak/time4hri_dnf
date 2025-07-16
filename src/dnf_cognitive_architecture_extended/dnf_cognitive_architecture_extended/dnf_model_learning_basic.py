@@ -181,7 +181,7 @@ class DNFModel(Node):
 
     def save_sequence_memory(self):
         # Create directory if it doesn't exist
-        data_dir = "data"
+        data_dir = "data_basic"
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
 
