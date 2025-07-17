@@ -37,7 +37,7 @@ class InputMatrix(Node):
         amplitude = 5.0
         width = 2.0
         t_start_list = [1, 4, 7]
-        t_stop_list = [2, 5, 7.1]
+        t_stop_list = [2, 5, 8]
 
         if len(input_position) != len(t_start_list) or len(input_position) != len(t_stop_list):
             raise ValueError(
@@ -167,7 +167,7 @@ class InputMatrix(Node):
             self.get_logger().info("Completed publishing all time slices.")
             self.timer.cancel()
 
-    def flat_input(self, amplitude=0.5):
+    def flat_input(self, amplitude=1):
         return np.ones_like(self.x) * amplitude
 
 

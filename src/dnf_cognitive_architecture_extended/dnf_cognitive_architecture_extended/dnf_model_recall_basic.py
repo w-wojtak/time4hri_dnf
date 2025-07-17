@@ -55,6 +55,9 @@ class DNFModelWM(Node):
         # Spatial grid
         self.x = np.arange(-self.x_lim, self.x_lim + self.dx, self.dx)
 
+        self.input_amplitude = 5.0
+        self.input_width = 2.0
+
         # Lock for threading
         self._lock = threading.Lock()
 
@@ -157,8 +160,8 @@ class DNFModelWM(Node):
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
-                self.u_f2 = load_sequence_memory().flatten() - \
-                    self.h_d_initial + 1.5
+                # self.u_f2 = load_sequence_memory().flatten() - \
+                #     self.h_d_initial + 1.5
 
             else:
                 data_dir = os.path.join(os.getcwd(), 'data_basic')
@@ -178,8 +181,8 @@ class DNFModelWM(Node):
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
-                self.u_f2 = load_sequence_memory().flatten() - self.h_d_initial + \
-                    1.5 - self.latest_h_amem
+                # self.u_f2 = load_sequence_memory().flatten() - self.h_d_initial + \
+                #     1.5 - self.latest_h_amem
 
         except FileNotFoundError:
             self.get_logger().info(f"No previous sequence memory found.")
@@ -217,19 +220,19 @@ class DNFModelWM(Node):
         self.kernel_pars_sim = (1.7, 0.8, 0.7)
         self.w_hat_sim = np.fft.fft(self.kernel_gauss(*self.kernel_pars_sim))
 
-        self.kernel_pars_f2 = (1.7, 0.8, 0.7)
-        self.w_hat_f2 = np.fft.fft(self.kernel_gauss(*self.kernel_pars_f2))
+        # self.kernel_pars_f2 = (1.7, 0.8, 0.7)
+        # self.w_hat_f2 = np.fft.fft(self.kernel_gauss(*self.kernel_pars_f2))
 
         # feedback fields - decision fields, similar to u_act
         self.h_f = -1.0
-        self.h_f_2 = -1.5
+        # self.h_f_2 = -1.5
         self.w_hat_f = self.w_hat_act
 
         self.tau_h_f = self.tau_h_act
         self.theta_f = self.theta_act
 
         self.u_f1 = self.h_f * np.ones(np.shape(self.x))
-        # self.u_f2 = self.h_f * np.ones(np.shape(self.x))
+        self.u_f2 = self.h_f * np.ones(np.shape(self.x))
 
         self.u_error = self.h_f * np.ones(np.shape(self.x))
 
@@ -276,6 +279,33 @@ class DNFModelWM(Node):
 
         input_agent_robot_feedback = self.latest_input_slice[2*n:]
 
+        ##
+        if input_agent2.any() > 0:
+            # Extract values of u_sim at bump centers (indices)
+            values_at_centers = [self.u_sim[idx] for idx in self.sim_centers]
+
+            # Find the index of the max value among those centers
+            max_idx = values_at_centers.index(max(values_at_centers))
+
+            # Get the center location with highest value
+            max_center = round(self.x[self.sim_centers[max_idx]])
+
+            # Log or use the result
+            self.get_logger().info(
+                f"Highest bump center: {max_center} with value {values_at_centers[max_idx]:.3f}")
+
+            # Create Gaussian at highest center
+            gauss_at_peak = self.input_amplitude * \
+                np.exp(-((self.x - max_center) ** 2) /
+                       (2 * self.input_width**2))
+
+            input_human_feedback = gauss_at_peak
+
+        else:
+            input_human_feedback = 0
+
+        ##
+
         # self.get_logger().info(
         #     f"Received size input: {len(self.u_act)}")
 
@@ -287,7 +317,7 @@ class DNFModelWM(Node):
         f_f2 = np.heaviside(self.u_f2 - self.theta_f, 1)
         f_hat_f2 = np.fft.fft(f_f2)
         conv_f2 = self.dx * \
-            np.fft.ifftshift(np.real(np.fft.ifft(f_hat_f2 * self.w_hat_f2)))
+            np.fft.ifftshift(np.real(np.fft.ifft(f_hat_f2 * self.w_hat_f)))
 
         f_act = np.heaviside(self.u_act - self.theta_act, 1)
         f_hat_act = np.fft.fft(f_act)
@@ -329,28 +359,13 @@ class DNFModelWM(Node):
         self.u_f1 += self.dt * (-self.u_f1 + conv_f1 + input_agent_robot_feedback +
                                 self.h_f - 1 * f_wm * conv_wm)
 
-        self.u_f2 += self.dt * (-self.u_f2 + conv_f2 + input_agent2 + self.input_action_onset +
-                                self.h_f_2 - 1 * f_wm * conv_wm)
+        self.u_f2 += self.dt * (-self.u_f2 + conv_f2 + input_human_feedback +
+                                self.h_f - 1 * f_wm * conv_wm)
 
         self.u_error += self.dt * (-self.u_error + conv_error +
                                    self.h_f - 2 * f_sim * conv_sim)
 
         self.h_u_amem += self.beta_adapt*(1 - (f_f2 * f_f1)) * (f_f1 - f_f2)
-
-        ##
-        # Extract values of u_sim at bump centers (indices)
-        values_at_centers = [self.u_sim[idx] for idx in self.sim_centers]
-
-        # Find the index of the max value among those centers
-        max_idx = values_at_centers.index(max(values_at_centers))
-
-        # Get the center location with highest value
-        max_center = round(self.x[self.sim_centers[max_idx]])
-
-        # Log or use the result
-        self.get_logger().info(
-            f"Highest bump center: {max_center} with value {values_at_centers[max_idx]:.3f}")
-        ##
 
         # List of input positions where we previously applied inputs
         input_positions = [-40, 0, 40]
