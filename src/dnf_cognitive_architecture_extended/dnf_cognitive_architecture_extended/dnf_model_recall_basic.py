@@ -15,6 +15,21 @@ import gc
 from scipy.ndimage import gaussian_filter1d  # type: ignore
 
 
+def find_bump_centers(u_array, theta, bump_half_width=25):
+    centers = []
+    u_copy = u_array.copy()
+
+    while np.max(u_copy) > theta:
+        max_idx = np.argmax(u_copy)
+        centers.append(max_idx)
+
+        start = max(0, max_idx - bump_half_width)
+        end = min(len(u_copy), max_idx + bump_half_width + 1)
+        u_copy[start:end] = 0.0
+
+    return centers
+
+
 class DNFModelWM(Node):
     def __init__(self):
         super().__init__("dnf_model_recall")
@@ -202,6 +217,9 @@ class DNFModelWM(Node):
         self.kernel_pars_sim = (1.7, 0.8, 0.7)
         self.w_hat_sim = np.fft.fft(self.kernel_gauss(*self.kernel_pars_sim))
 
+        self.kernel_pars_f2 = (1.7, 0.8, 0.7)
+        self.w_hat_f2 = np.fft.fft(self.kernel_gauss(*self.kernel_pars_f2))
+
         # feedback fields - decision fields, similar to u_act
         self.h_f = -1.0
         self.h_f_2 = -1.5
@@ -225,6 +243,11 @@ class DNFModelWM(Node):
         # initialize h level for the adaptation
         self.h_u_amem = np.zeros(np.shape(self.x))
         self.beta_adapt = 0.005
+
+        self.sim_centers = find_bump_centers(self.u_sim, 1.0)
+        self.x_centers = [round(self.x[idx]) for idx in self.sim_centers]
+
+        self.get_logger().info(f"BUMP CENTERS: {self.x_centers}")
 
     def process_inputs(self, msg=None):
         """Process recall by receiving msg from subscription or by timer."""
@@ -264,7 +287,7 @@ class DNFModelWM(Node):
         f_f2 = np.heaviside(self.u_f2 - self.theta_f, 1)
         f_hat_f2 = np.fft.fft(f_f2)
         conv_f2 = self.dx * \
-            np.fft.ifftshift(np.real(np.fft.ifft(f_hat_f2 * self.w_hat_f)))
+            np.fft.ifftshift(np.real(np.fft.ifft(f_hat_f2 * self.w_hat_f2)))
 
         f_act = np.heaviside(self.u_act - self.theta_act, 1)
         f_hat_act = np.fft.fft(f_act)
@@ -313,6 +336,21 @@ class DNFModelWM(Node):
                                    self.h_f - 2 * f_sim * conv_sim)
 
         self.h_u_amem += self.beta_adapt*(1 - (f_f2 * f_f1)) * (f_f1 - f_f2)
+
+        ##
+        # Extract values of u_sim at bump centers (indices)
+        values_at_centers = [self.u_sim[idx] for idx in self.sim_centers]
+
+        # Find the index of the max value among those centers
+        max_idx = values_at_centers.index(max(values_at_centers))
+
+        # Get the center location with highest value
+        max_center = round(self.x[self.sim_centers[max_idx]])
+
+        # Log or use the result
+        self.get_logger().info(
+            f"Highest bump center: {max_center} with value {values_at_centers[max_idx]:.3f}")
+        ##
 
         # List of input positions where we previously applied inputs
         input_positions = [-40, 0, 40]

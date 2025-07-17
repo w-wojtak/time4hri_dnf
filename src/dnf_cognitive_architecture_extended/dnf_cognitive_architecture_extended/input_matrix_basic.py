@@ -37,7 +37,7 @@ class InputMatrix(Node):
         amplitude = 5.0
         width = 2.0
         t_start_list = [1, 4, 7]
-        t_stop_list = [2, 5, 8]
+        t_stop_list = [2, 5, 7.1]
 
         if len(input_position) != len(t_start_list) or len(input_position) != len(t_stop_list):
             raise ValueError(
@@ -68,7 +68,9 @@ class InputMatrix(Node):
 
         # Generate the input matrix for Gaussian parameters 1
         self.input_matrix_1 = self.get_input_matrix(self.gaussian_params_1)
-        self.input_matrix_2 = self.get_input_matrix(self.gaussian_params_2)
+        # self.input_matrix_2 = self.get_input_matrix(self.gaussian_params_2)
+        self.input_matrix_2 = self.get_input_matrix(
+            self.gaussian_params_2, use_flat=True)
         self.input_matrix_3 = np.zeros(
             (len(self.t), len(self.x)))  # Placeholder
 
@@ -78,7 +80,7 @@ class InputMatrix(Node):
     def gaussian(self, center=0, amplitude=1.0, width=1.0):
         return amplitude * np.exp(-((self.x - center) ** 2) / (2 * (width ** 2)))
 
-    def get_input_matrix(self, params_list):
+    def get_input_matrix(self, params_list, use_flat=False):
         input_matrix = np.zeros((len(self.t), len(self.x)))
         for params in params_list:
             center = params['center']
@@ -89,8 +91,11 @@ class InputMatrix(Node):
 
             for i, t_val in enumerate(self.t):
                 if t_start <= t_val <= t_stop:
-                    input_matrix[i,
-                                 :] += self.gaussian(center, amplitude, width)
+                    if use_flat:
+                        input_matrix[i, :] += self.flat_input(amplitude)
+                    else:
+                        input_matrix[i,
+                                     :] += self.gaussian(center, amplitude, width)
         return input_matrix
 
     def threshold_callback(self, msg):
@@ -161,6 +166,9 @@ class InputMatrix(Node):
             # Stop timer when all slices are published
             self.get_logger().info("Completed publishing all time slices.")
             self.timer.cancel()
+
+    def flat_input(self, amplitude=0.5):
+        return np.ones_like(self.x) * amplitude
 
 
 def main(args=None):
