@@ -43,6 +43,7 @@ setup(
             "dnf_model_recall = dnf_cognitive_architecture_extended.dnf_model_recall:main",
             "dnf_model_learning_basic = dnf_cognitive_architecture_extended.dnf_model_learning_basic:main",
             "dnf_model_recall_basic = dnf_cognitive_architecture_extended.dnf_model_recall_basic:main",
+            "dnf_model_recall_with error = dnf_cognitive_architecture_extended.dnf_model_recall_with error:main",
             'udp_listener_node = dnf_cognitive_architecture_extended.udp_listener_node:main',
             'udp_response_sender_node = dnf_cognitive_architecture_extended.udp_response_sender_node:main'
         ],

@@ -106,7 +106,7 @@ To launch an experiment with one learning trial and three recall trials, run:
 
 or
 
-`ros2 launch dnf_cognitive_architecture_extended dnf_experiment_extended_launch.py`
+`ros2 launch dnf_cognitive_architecture_extended dnf_experiment_launch.py`
 
 
 
