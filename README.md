@@ -47,7 +47,7 @@ This package is designed for ROS 2 Humble on Ubuntu 22.04 (tested on WSL2). It i
 ### Prerequisites
 
 - Ubuntu 22.04 or compatible (e.g., WSL2 Ubuntu 22.04)  
-- ROS 2 Humble installed and sourced ([ROS 2 Humble installation guide](https://docs.ros.org/en/humble/Installation.html))  
+- ROS 2 Humble installed and sourced 
 - Python 3.10  
 - `colcon` build tool installed  
 
@@ -68,13 +68,9 @@ Before running any ROS 2 commands or launching nodes:
 
 `source install/setup.bash`
 
-Tip: Add this to your `.bashrc` for automatic sourcing:
-
-`echo "source ~/path/to/time4hri_dnf/install/setup.bash" >> ~/.bashrc source ~/.bashrc`
-
 
 ## Usage
-This package includes two launch files for the two experimental phases.
+This package includes launch files for different versions of the two experimental phases.
 
 ### Learning Phase
 Launch nodes to observe and encode a sequence of actions:
@@ -99,6 +95,19 @@ Nodes launched:
 
 * `dnf_model_recall` — recall node that uses the trial number to select memory
 * `output_node` — sends action commands to the robot
+
+There are other launch files for launching different versions of learnign and recall, e.g.
+
+`dnf_learn_basic_launch.py`, `dnf_recall_basic_launch.py` 
+
+To launch an experiment with one learning trial and three recall trials, run:
+
+`ros2 launch dnf_cognitive_architecture_extended dnf_experiment_basic_launch.py`
+
+or
+
+`ros2 launch dnf_cognitive_architecture_extended dnf_experiment_extended_launch.py`
+
 
 
 ## License

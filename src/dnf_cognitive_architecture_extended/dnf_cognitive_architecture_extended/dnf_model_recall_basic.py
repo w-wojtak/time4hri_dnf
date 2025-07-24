@@ -147,8 +147,6 @@ class DNFModelWM(Node):
 
             if self.trial_number == 1:
 
-                # self.h_d_initial = 4.1067860962773075
-
                 # Ensure it's 1D and shift as needed
                 self.u_act = load_sequence_memory().flatten() - self.h_d_initial + 1.5
                 self.input_action_onset = load_sequence_memory().flatten()
@@ -159,9 +157,6 @@ class DNFModelWM(Node):
                 self.input_action_onset_2 = load_sequence_memory().flatten()
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
-
-                # self.u_f2 = load_sequence_memory().flatten() - \
-                #     self.h_d_initial + 1.5
 
             else:
                 data_dir = os.path.join(os.getcwd(), 'data_basic')
@@ -181,9 +176,6 @@ class DNFModelWM(Node):
                 self.h_u_sim = -self.h_d_initial * \
                     np.ones(np.shape(self.x)) + 1.5
 
-                # self.u_f2 = load_sequence_memory().flatten() - self.h_d_initial + \
-                #     1.5 - self.latest_h_amem
-
         except FileNotFoundError:
             self.get_logger().info(f"No previous sequence memory found.")
 
@@ -191,14 +183,8 @@ class DNFModelWM(Node):
         self.h_0_wm = -1.0
         self.theta_wm = 0.8
 
-        # self.kernel_pars_wm = (1.5, 0.5, 0.75)
-        # self.kernel_pars_wm = (2, 0.5, 0.6)
         self.kernel_pars_wm = (1.75, 0.5, 0.8)
         self.w_hat_wm = np.fft.fft(self.kernel_osc(*self.kernel_pars_wm))
-
-        # self.kernel_pars_inhib = (2.5, 0.5, 0.8)
-        # # Fourier transform of the kernel function
-        # self.w_hat_inhib = np.fft.fft(self.kernel_osc(*self.kernel_pars_inhib))
 
         # initialization
         self.u_wm = self.h_0_wm * np.ones(np.shape(self.x))
@@ -220,12 +206,8 @@ class DNFModelWM(Node):
         self.kernel_pars_sim = (1.7, 0.8, 0.7)
         self.w_hat_sim = np.fft.fft(self.kernel_gauss(*self.kernel_pars_sim))
 
-        # self.kernel_pars_f2 = (1.7, 0.8, 0.7)
-        # self.w_hat_f2 = np.fft.fft(self.kernel_gauss(*self.kernel_pars_f2))
-
         # feedback fields - decision fields, similar to u_act
         self.h_f = -1.0
-        # self.h_f_2 = -1.5
         self.w_hat_f = self.w_hat_act
 
         self.tau_h_f = self.tau_h_act
