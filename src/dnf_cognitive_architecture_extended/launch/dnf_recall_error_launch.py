@@ -13,8 +13,8 @@ def generate_launch_description():
         ),
         Node(
             package='dnf_cognitive_architecture_extended',
-            executable='input_matrix',
-            name='input_matrix'
+            executable='input_matrix_error',
+            name='input_matrix_error'
         ),
         Node(
             package='dnf_cognitive_architecture_extended',
