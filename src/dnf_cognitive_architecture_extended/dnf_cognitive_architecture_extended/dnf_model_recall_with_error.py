@@ -595,7 +595,7 @@ def main(args=None):
     finally:
         # node.save_history()
         node.plot_history_at_input_positions()
-        node.plot_final_amem()
+        # node.plot_final_amem()
         node.destroy_node()
         rclpy.shutdown()
         plt.close(node.fig)

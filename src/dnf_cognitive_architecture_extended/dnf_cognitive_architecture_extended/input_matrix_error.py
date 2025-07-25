@@ -50,13 +50,14 @@ class InputMatrix(Node):
             for pos, t_start, t_stop in zip(input_position, t_start_list, t_stop_list)
         ]
 
-        # t_start_list_2 = [1.5, 5, 7.5]
-        # t_stop_list_2 = [2.5, 6, 8.5]
+        input_position_2 = [-40, 40, 0, 40]
+        t_start_list_2 = [1, 4, 7, 10]
+        t_stop_list_2 = [2, 5, 8, 11]
 
         self.gaussian_params_2 = [
             {'center': pos, 'amplitude': amplitude, 'width': width,
              't_start': t_start, 't_stop': t_stop}
-            for pos, t_start, t_stop in zip(input_position, t_start_list, t_stop_list)
+            for pos, t_start, t_stop in zip(input_position_2, t_start_list_2, t_stop_list_2)
         ]
 
         # Initialize Gaussian parameters for matrix 2 (empty initially)

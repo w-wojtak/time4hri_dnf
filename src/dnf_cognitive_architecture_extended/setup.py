@@ -15,6 +15,8 @@ setup(
         ('share/' + package_name + '/launch',
          ['launch/dnf_recall_basic_launch.py']),
         ('share/' + package_name + '/launch',
+         ['launch/dnf_recall_error_launch.py']),
+        ('share/' + package_name + '/launch',
          ['launch/dnf_learn_basic_launch.py']),
         ('share/' + package_name + '/launch',
          ['launch/dnf_experiment_launch.py']),
@@ -38,6 +40,7 @@ setup(
         'console_scripts': [
             "input_matrix = dnf_cognitive_architecture_extended.input_matrix:main",
             "input_matrix_basic = dnf_cognitive_architecture_extended.input_matrix_basic:main",
+            "input_matrix_error = dnf_cognitive_architecture_extended.input_matrix_error:main",
             "dnf_model_learning = dnf_cognitive_architecture_extended.dnf_model_learning:main",
             "output_node = dnf_cognitive_architecture_extended.output_node:main",
             "dnf_model_recall = dnf_cognitive_architecture_extended.dnf_model_recall:main",
