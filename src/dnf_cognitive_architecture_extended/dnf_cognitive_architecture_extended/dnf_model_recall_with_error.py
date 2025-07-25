@@ -302,8 +302,11 @@ class DNFModelWM(Node):
         self.u_f2 += self.dt * (-self.u_f2 + conv_f2 + input_agent2 +
                                 self.h_f - 1 * f_wm * conv_wm)
 
-        self.u_error += self.dt * (-self.u_error + conv_error +
+        self.u_error += self.dt * (-self.u_error + conv_error + 1*(f_f2 * conv_f2) +
                                    self.h_f - 2 * f_sim * conv_sim)
+
+        #    u_error += dt * (-u_error + conv_error + 1*(f_f2 * conv_f2) +
+        #              h_f - 2 * f_sim * conv_sim)
 
         self.h_u_amem += self.beta_adapt*(1 - (f_f2 * f_f1)) * (f_f1 - f_f2)
 
