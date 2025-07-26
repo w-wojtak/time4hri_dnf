@@ -4,14 +4,18 @@ from std_msgs.msg import String
 import socket
 import threading
 
-UDP_IP = "0.0.0.0"     # Listen on all interfaces
-UDP_PORT = 5005        # Must match sender
+UDP_IP = "0.0.0.0"
+UDP_PORT = 5005
 
 
 class UDPListenerNode(Node):
     def __init__(self):
         super().__init__('udp_listener_node')
-        self.publisher_ = self.create_publisher(String, 'voice_command', 10)
+
+        # Publisher for filtered messages
+        self.filtered_publisher = self.create_publisher(
+            String, 'voice_command_filtered', 10)
+
         self.get_logger().info(
             f'Listening for UDP messages on port {UDP_PORT}')
         self.thread = threading.Thread(target=self.listen_loop, daemon=True)
@@ -24,7 +28,20 @@ class UDPListenerNode(Node):
             data, _ = sock.recvfrom(1024)
             message = data.decode().strip()
             self.get_logger().info(f"Received: '{message}'")
-            self.publisher_.publish(String(data=message))
+
+            if self.filter_message(message):
+                self.filtered_publisher.publish(String(data=message))
+                self.get_logger().info(
+                    f"Published filtered message: '{message}'")
+            else:
+                self.get_logger().info("Message discarded.")
+
+    def filter_message(self, message: str) -> bool:
+        """
+        Define your filtering logic here.
+        Example: Only forward messages that contain the word 'start'
+        """
+        return 'start' in message.lower()
 
 
 def main(args=None):

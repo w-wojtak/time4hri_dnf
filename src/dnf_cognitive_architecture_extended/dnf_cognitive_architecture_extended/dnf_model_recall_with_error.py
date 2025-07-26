@@ -290,8 +290,8 @@ class DNFModelWM(Node):
         self.u_act += self.dt * (-self.u_act + conv_act + self.input_action_onset +
                                  self.h_u_act - 6.0 * f_wm * conv_wm)
 
-        self.u_sim += self.dt * (-self.u_sim + conv_sim + self.input_action_onset_2 +
-                                 self.h_u_sim - 6.0 * f_wm * conv_wm)
+        self.u_sim += (self.dt*1) * (-self.u_sim + conv_sim + self.input_action_onset_2 +
+                                     self.h_u_sim - 6.0 * f_wm * conv_wm)
 
         self.u_wm += self.dt * \
             (-self.u_wm + conv_wm + 6*((f_f1*self.u_f1)*(f_f2*self.u_f2)) + self.h_u_wm)
@@ -332,6 +332,10 @@ class DNFModelWM(Node):
 
         u_f2_values_at_positions = [self.u_f2[idx] for idx in input_indices]
         self.u_f2_history.append(u_f2_values_at_positions)
+
+        u_error_values_at_positions = [
+            self.u_error[idx] for idx in input_indices]
+        self.u_error_history.append(u_error_values_at_positions)
 
         # Track current time
         current_time = self.get_clock().now().to_msg().sec
@@ -454,6 +458,7 @@ class DNFModelWM(Node):
             'Working Memory (u_wm)': self.u_wm_history,
             'Field 1 (u_f1)': self.u_f1_history,
             'Field 2 (u_f2)': self.u_f2_history,
+            'Error Field (u_error)': self.u_error_history,
         }
 
         # Define axis limits based on field name
@@ -463,6 +468,7 @@ class DNFModelWM(Node):
             'Working Memory (u_wm)': (-2, 16),
             'Field 1 (u_f1)': (-5, 3.5),
             'Field 2 (u_f2)': (-5, 3.5),
+            'Error Field (u_error)': (-5, 3.5),
         }
 
         num_fields = len(fields)
