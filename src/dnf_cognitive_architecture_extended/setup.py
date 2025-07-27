@@ -19,7 +19,7 @@ setup(
         ('share/' + package_name + '/launch',
          ['launch/dnf_learn_basic_launch.py']),
         ('share/' + package_name + '/launch',
-         ['launch/dnf_learn_basic_speech_launch.py']),
+         ['launch/dnf_recall_basic_speech_launch.py']),
         ('share/' + package_name + '/launch',
          ['launch/dnf_experiment_launch.py']),
         ('share/' + package_name + '/launch',
