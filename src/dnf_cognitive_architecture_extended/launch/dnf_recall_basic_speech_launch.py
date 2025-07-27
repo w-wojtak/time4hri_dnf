@@ -13,6 +13,11 @@ def generate_launch_description():
         ),
         Node(
             package='dnf_cognitive_architecture_extended',
+            executable='udp_listener_node',
+            name='udp_listener_node'
+        ),
+        Node(
+            package='dnf_cognitive_architecture_extended',
             executable='input_matrix_basic_speech',
             name='input_matrix_basic_speech'
         ),
