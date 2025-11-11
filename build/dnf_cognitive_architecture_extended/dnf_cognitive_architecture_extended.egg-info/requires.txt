@@ -1,4 +1,0 @@
-setuptools
-rclpy
-numpy
-matplotlib
